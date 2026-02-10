@@ -45,25 +45,31 @@ Used Azure Run Command with PowerShell to unlock the account remotely without us
 ## Screenshots
 
 ### Agent Heartbeat (VM sending logs)
-![Heartbeat](screenshots/01-heartbeat.png)
+<img width="1906" height="950" alt="01-heartbeat png" src="https://github.com/user-attachments/assets/df8ef5a2-8ee4-40e5-a95d-40230dafe60b" />
+
 
 ### Data Collection Rule Configuration
-![DCR](screenshots/02-data-collection-rule.png)
+<img width="1913" height="907" alt="02-data-collection-rule png" src="https://github.com/user-attachments/assets/90cf53eb-188d-47af-8197-4be8be6fde57" />
 
 ### Failed Logon Attempts (Event ID 4625)
-![4625](screenshots/03-failed-logon-attempt-log.png)
+<img width="1911" height="902" alt="03-failed-logon-attempt-log png" src="https://github.com/user-attachments/assets/91f66526-d304-4d3c-8995-5e06319ae85a" />
+
 
 ### Account Lockout on VM (Event ID 4740)
-![4740 VM](screenshots/04-account-lockout-vmlog.png)
+<img width="1909" height="899" alt="04-account-lockout-vmlog png" src="https://github.com/user-attachments/assets/17722b3b-3de4-41f6-84c9-bda36c005162" />
+
 
 ### Account Lockout in Log Analytics (Event ID 4740)
-![4740 LAW](screenshots/05-law-event4740-ingested.png)
+<img width="1904" height="901" alt="05-law-event4740-ingested png" src="https://github.com/user-attachments/assets/386fc077-18cb-4750-87a9-4fc4408cd850" />
+
 
 ### Alert Fired in Azure Monitor
-![Alert](screenshots/06-alert-fired.png)
+<img width="1912" height="952" alt="06-alert-fired png" src="https://github.com/user-attachments/assets/c00ae451-53c8-4972-b3a3-9977875ead2b" />
+
 
 ### Run Command Unlock Response
-![Run Command](screenshots/07-run-command-unlock.png)
+<img width="1911" height="907" alt="07-run-command-unlock png" src="https://github.com/user-attachments/assets/00297470-d8d7-4e4e-8a9d-c5c1a294ea49" />
+
 
 ---
 
