@@ -1,32 +1,64 @@
-Azure SOC Lab: Detecting and Responding to Account Lockout Attacks
+Azure SOC Lab — Brute Force Detection and Account Lockout Response
 
-This lab simulates a very common real world SOC scenario. A user account gets locked out after multiple failed logon attempts. Instead of just fixing it, I built monitoring around it so Azure could detect it, alert on it, and let me respond to it like a SOC analyst would.
 
-The goal was not just to unlock an account. The goal was to build the visibility pipeline that shows how security events move from a VM into Log Analytics, trigger alerts, and then be investigated and remediated.
 
-Step 1: Verify the VM is sending telemetry (Heartbeat)
 
-Before doing anything security related, I verified the Azure Monitor Agent was properly communicating with Log Analytics.
 
-KQL used:
+
+
+
+Overview
+
+This lab simulates a brute force login attack against a Windows Server virtual machine and demonstrates how Azure Monitor, Log Analytics, and KQL can be used to detect failed logon attempts, identify account lockouts, trigger an alert, and remotely respond by unlocking the account using Azure Run Command.
+
+This mirrors a real SOC workflow from detection to response.
+
+Architecture
+Windows VM
+   |
+Azure Monitor Agent
+   |
+Data Collection Rule
+   |
+Log Analytics Workspace
+   |
+KQL Detection Queries
+   |
+Azure Alert Rule
+   |
+Run Command Response
+
+Lab Requirements
+
+Azure Windows Server VM
+
+Azure Monitor Agent installed
+
+Log Analytics Workspace
+
+Data Collection Rule collecting Security Events
+
+RDP access to generate failed logons
+
+Step 1 — Verify Agent Communication (Heartbeat)
+
+KQL Query:
 
 Heartbeat
 | take 10
 
 
-This confirmed the VM was actively reporting to the workspace.
+This confirms the VM is successfully sending telemetry to Log Analytics.
 
-Step 2: Configure the Data Collection Rule
+Step 2 — Configure Data Collection Rule for Security Logs
 
-I created a Data Collection Rule to send Windows Security Event Logs into the Log Analytics workspace. This is what allows Azure to see authentication activity from the VM.
+The Data Collection Rule is configured to collect Windows Security Event logs and send them to the Log Analytics Workspace.
 
-Without this step, there is no visibility into failed logons or account lockouts.
+Step 3 — Generate Failed Logon Attempts (Event ID 4625)
 
-Step 3: Generate Failed Logon Attempts (Event ID 4625)
+Multiple failed RDP logins are performed to simulate a brute force attack.
 
-I intentionally entered the wrong password multiple times over RDP to simulate a brute force style login attempt.
-
-KQL used:
+KQL Query:
 
 Event
 | where EventLog == "Security"
@@ -34,80 +66,58 @@ Event
 | take 20
 
 
-This shows multiple failed authentication attempts.
+Step 4 — Account Lockout Occurs (Event ID 4740)
 
-Step 4: Confirm Account Lockout on the VM (Event ID 4740)
+After enough failed attempts, the account becomes locked.
 
-After enough failed attempts, the account locked. I verified this directly on the VM logs.
-
-KQL used:
+KQL Query:
 
 Event
 | where EventID == 4740
-| sort by TimeGenerated desc
 
 
-This proves the account lockout occurred on the system itself.
+Step 5 — Log Analytics Confirms Lockout Event
 
-Step 5: Verify the Lockout Event Reached Log Analytics
+The lockout event is successfully ingested into the workspace from the VM.
 
-Next, I confirmed that the same Event ID 4740 was ingested into the Log Analytics workspace. This proves the monitoring pipeline is working end to end.
+Step 6 — Alert Rule Triggers
 
-Step 6: Create an Alert for Multiple Failed Logons
+An Azure alert rule monitors for Event ID 4740 and fires when the account lockout occurs.
 
-I created an Azure Monitor alert rule that triggers when multiple failed logons are detected. Shortly after the failed attempts, the alert fired.
+Step 7 — SOC Response Using Run Command
 
-This shows how a SOC team would be notified of suspicious authentication behavior.
-
-Step 7: Respond Using Run Command to Unlock the Account
-
-Instead of logging into the VM, I used Azure Run Command to remotely execute PowerShell to unlock the account.
+Instead of logging into the VM, Azure Run Command is used to unlock the account remotely.
 
 PowerShell used:
 
 $user = "dpmoran11"
-
 $u = [ADSI]"WinNT://./$user,user"
 $u.IsAccountLocked = $false
 $u.SetInfo()
-
 "Unlocked user: $user"
 
 
-This simulates remote incident response without direct RDP access.
+KQL Queries Used
+Heartbeat | take 10
 
-What This Lab Demonstrates
+Event | where EventLog == "Security" | where EventID == 4625
 
-This lab shows the full security monitoring lifecycle:
+Event | where EventID == 4740
 
-VM telemetry collection
+Lessons Learned
 
-Security log ingestion into Log Analytics
+How Windows security events flow into Azure Monitor
 
-Detection of failed logon attempts
+How to detect brute force patterns using KQL
 
-Detection of account lockout events
+How to detect account lockouts in real time
 
-Alert creation and triggering
+How to create alert rules tied to specific security events
 
-Remote response using Azure tools
+How to perform remote incident response without RDP access
 
-This is exactly how a SOC analyst investigates authentication based alerts in a real environment.
+How this process mirrors real SOC detection and response workflows
 
-Key Skills Demonstrated
+Screenshots Reference
 
-Azure Monitor Agent
-
-Data Collection Rules
-
-Log Analytics and KQL
-
-Security Event Monitoring
-
-Azure Alert Rules
-
-Incident style response using Run Command
-
-Understanding Windows Security Event IDs 4625 and 4740
-
-This lab helped me understand not just how to configure monitoring, but how to think like a defender when authentication abuse happens inside an environment.
+All screenshots for this lab are stored in the screenshots folder and referenced throughout each step.
